@@ -1,0 +1,48 @@
+<!------------------------ Add below code in cart-drawer.liquid ------------------------------------>
+<div class="threshold-bar-container">
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+  </div>
+  <p id="thresholdMessage">Add more products to unlock discounts!</p>
+</div>
+
+<!---------------- Add below js at the end of the file ------------------------>
+<script> 
+document.addEventListener("DOMContentLoaded", function() {
+  const { routes: e } = window.MinimogSettings;
+updateProgressBar(cart);
+  // Call the function initially
+  fetchCartData();
+  // If you update the cart dynamically, you can re-trigger this function to update the progress bar
+  document.addEventListener(`${e.cart}?section_id=cart-template`, fetchCartData);
+}); 
+    function updateProgressBar(cart) {
+    const progressFill = document.getElementById('progressFill');
+    const thresholdMessage = document.getElementById('thresholdMessage');
+
+    let productCount = cart.item_count; // Get the number of items in the cart
+    let progress = 0;
+    let message = 'Add more products to unlock discounts!';
+
+    // Check how many products are in the cart and set progress/message
+    if (productCount >= 3) {
+      progress = 100;
+      message = 'You unlocked a 10% discount and free shipping!';
+    } else if (productCount == 2) {
+      progress = 50;
+      message = 'You unlocked a 5% discount!';
+    }
+
+    // Update the progress bar width and message
+    progressFill.style.width = progress + '%';
+    thresholdMessage.textContent = message;
+  }
+  // Fetch cart data and update the progress bar
+  function fetchCartData() {
+    fetch('/cart.js')
+      .then(response => response.json())
+      .then(cart => {
+        updateProgressBar(cart);
+      });
+  }
+</script>
